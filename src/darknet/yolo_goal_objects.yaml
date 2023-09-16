@@ -1,0 +1,13 @@
+yolo_model:
+
+  config_file:
+    name: tiny_yolo_goal_objects.cfg
+  weight_file:
+    name: tiny_yolo_goal_objects_6000.weights
+  threshold:
+    value: 0.7
+  detection_classes:
+    names:
+      - green box 
+      - mail box
+      - fire hydrant

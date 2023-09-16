@@ -1,0 +1,27 @@
+<launch>
+    <!-- Config camera image topic -->
+    <arg name="camera_rgb_topic" default="/camera/rgb/image_raw"/>
+
+    <!-- Console launch prefix -->
+    <arg name="launch_prefix" default=""/>
+
+    <!-- Config and weights folder -->
+    <arg name="yolo_weights_path" default="$(find comp4034)/src/assignment/darknet/weights"/>
+    <arg name="yolo_config_path" default="$(find comp4034)/src/assignment/darknet/config"/>
+
+    <!-- ROS and network parameter files -->
+    <arg name="ros_param_file" default="$(find comp4034)/src/assignment/darknet/ros.yaml"/>
+    <arg name="network_param_file" default="$(find comp4034)/src/assignment/darknet/yolo_goal_objects.yaml"/>
+
+    <!-- Load parameters -->
+    <rosparam command="load" ns="darknet_ros" file="$(arg network_param_file)"/>
+    <rosparam command="load" file="$(find comp4034)/src/assignment/darknet/ros.yaml"/>
+    <param name="darknet_ros/subscribers/camera_reading/topic" type="string" value="$(arg camera_rgb_topic)"/>
+
+    <!-- Start darknet and ros wrapper -->
+    <node pkg="darknet_ros" type="darknet_ros" name="darknet_ros" output="screen" launch-prefix="$(arg launch_prefix)">
+        <param name="weights_path" value="$(arg yolo_weights_path)"/>
+        <param name="config_path" value="$(arg yolo_config_path)"/>
+    </node>
+</launch>
+    

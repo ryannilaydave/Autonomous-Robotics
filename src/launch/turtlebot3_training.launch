@@ -1,0 +1,51 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="x_pos" default="-1.70"/>
+  <arg name="y_pos" default="4.2"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="map_file" default="$(find comp4034)/src/assignment/maps/train_env.yaml"/>
+  <arg name="open_rviz" default="true"/>
+
+  <!-- World Setup -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find comp4034)/src/assignment/worlds/comp4034_training.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>  
+
+  <!-- Robot Setup -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find comp4034)/src/assignment/xacro/turtlebot3_waffle.urdf.xacro"/>
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3_waffle -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+  <!-- State Publisher -->
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="20.0" />
+  </node>
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL -->
+  <include file="$(find comp4034)/src/assignment/launch/amcl.launch"/>
+
+  <!-- Move Base -->
+  <include file="$(find comp4034)/src/assignment/launch/move_base.launch">
+  </include>
+
+  <!-- RVIS -->
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find comp4034)/src/assignment/rviz/turtlebot3_training.rviz"/>
+  </group>
+
+  <!-- Darknet -->
+  <include file="$(find comp4034)/src/assignment/launch/darknet_ros.launch"/>
+
+</launch>
+
+
+
+
+
